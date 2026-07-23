@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -17,6 +18,7 @@ import {
 } from "recharts";
 import { useAnalysis } from "@/context/AnalysisContext";
 import RiskBadge from "@/components/RiskBadge";
+import WhatIfPanel from "@/components/WhatIfPanel";
 import {
   CATEGORY_COLORS,
   EXPOSURE_SERIES_COLOR,
@@ -31,10 +33,39 @@ import {
   topRiskCustomers,
   totalExposure,
 } from "@/lib/aggregations";
-import { RISK_THRESHOLDS } from "@/lib/riskScoring";
+import { RISK_THRESHOLDS, scoreCustomer } from "@/lib/riskScoring";
+import type { RiskWeights } from "@/lib/types";
 
 export default function DashboardPage() {
   const { result } = useAnalysis();
+
+  // Hooks must run unconditionally, before the "no analysis" early return
+  // below, so the what-if weights default to the analysis weights (or the
+  // scoring engine defaults if no analysis is loaded yet).
+  const [weights, setWeights] = useState<RiskWeights>(
+    result?.weights ?? {
+      creditRiskWeight: 0.4,
+      repaymentRiskWeight: 0.4,
+      exposureWeight: 0.2,
+    }
+  );
+
+  const adjustedCustomers = useMemo(() => {
+    if (!result) return [];
+    return result.customers.map((c) =>
+      scoreCustomer(
+        {
+          customerId: c.customerId,
+          customerName: c.customerName,
+          industrySector: c.industrySector,
+          creditScore: c.creditScore,
+          repaymentStatus: c.repaymentStatus,
+          loanBalance: c.loanBalance,
+        },
+        weights
+      )
+    );
+  }, [result, weights]);
 
   if (!result) {
     return (
@@ -53,13 +84,13 @@ export default function DashboardPage() {
   const { customers, rules, csvFileName, pdfFileName, pdfPageCount, analysedAt, isSampleData, pdfParseFailed, pdfParseError } =
     result;
 
-  const summaries = categorySummaries(customers);
-  const barData = categoryChartData(customers);
-  const industryData = exposureByIndustry(customers);
-  const trendData = generatePortfolioTrend(customers);
-  const top10 = topRiskCustomers(customers, 10);
-  const actions = recommendedActions(customers);
-  const total = totalExposure(customers);
+  const summaries = categorySummaries(adjustedCustomers);
+  const barData = categoryChartData(adjustedCustomers);
+  const industryData = exposureByIndustry(adjustedCustomers);
+  const trendData = generatePortfolioTrend(adjustedCustomers);
+  const top10 = topRiskCustomers(adjustedCustomers, 10);
+  const actions = recommendedActions(adjustedCustomers);
+  const total = totalExposure(adjustedCustomers);
 
   const analysedDate = new Date(analysedAt).toLocaleDateString("en-AU", {
     day: "2-digit",
@@ -88,6 +119,8 @@ export default function DashboardPage() {
           {pdfFileName ?? "no policy uploaded"} &middot; analysed {analysedDate}, {analysedTime}
         </p>
       </div>
+
+      <WhatIfPanel weights={weights} onChange={setWeights} />
 
       {/* 2. Category KPI cards */}
       <div className="grid sm:grid-cols-3 gap-4">
