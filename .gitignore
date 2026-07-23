@@ -1,0 +1,10 @@
+# Node / Next.js
+node_modules
+.next
+out
+.env*
+.DS_Store
+*.log
+
+# Build/deploy config containing credentials — never commit this
+config.txt
