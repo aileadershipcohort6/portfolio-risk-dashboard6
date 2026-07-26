@@ -65,6 +65,13 @@ accepted).
 Next.js (App Router, TypeScript), Tailwind CSS, Recharts, PapaParse,
 pdfjs-dist. No backend, no external APIs.
 
+## Design
+
+Colour tokens in `src/app/globals.css` are inspired by National Australia
+Bank's public brand colours (red/black, sourced from nab.com.au and
+third-party brand-colour registries) — this is a stylised internal prototype,
+not an official NAB deliverable, and does not use NAB's actual logo mark.
+
 ## Out of scope
 
 No authentication, no server-side persistence, no real customer data, no

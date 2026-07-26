@@ -1,18 +1,23 @@
 @import "tailwindcss";
 
 :root {
+  /* NAB-inspired brand palette: National Australia Bank's public brand
+     colours are red and black (source: nab.com.au, cross-checked against
+     third-party brand-colour registries). Used here for the accent/chrome
+     only — risk-red below stays a distinct, desaturated brick tone so a
+     Red-risk badge is never visually confused with a brand-coloured button. */
   --background: #f6f7f9;
   --surface: #ffffff;
-  --foreground: #1a2027;
-  --muted: #5b6572;
-  --border: #e2e5e9;
-  --accent: #2c5a8c;
-  --accent-dark: #1f4267;
+  --foreground: #171412;
+  --muted: #5c5652;
+  --border: #e5e1de;
+  --accent: #d2001f;
+  --accent-dark: #a3001a;
   --risk-green: #2f7d4f;
   --risk-green-bg: #eaf5ee;
   --risk-amber: #b5720f;
   --risk-amber-bg: #fdf3e2;
-  --risk-red: #b13030;
+  --risk-red: #a3242a;
   --risk-red-bg: #fbeaea;
 }
 

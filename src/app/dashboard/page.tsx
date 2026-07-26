@@ -31,18 +31,20 @@ import type { RiskCategory } from "@/lib/types";
 const CATEGORY_COLORS: Record<RiskCategory, string> = {
   Green: "#2f7d4f",
   Amber: "#b5720f",
-  Red: "#b13030",
+  Red: "#a3242a",
 };
 
+// NAB-inspired red -> grey qualitative palette for the industry pie chart
+// (mirrors the brand accent in globals.css rather than the old blue theme).
 const INDUSTRY_PALETTE = [
-  "#1f4267",
-  "#2c5a8c",
-  "#4a7ab0",
-  "#7098c2",
-  "#9db8d6",
-  "#5b6572",
-  "#8b95a1",
-  "#b8c0c9",
+  "#a3001a",
+  "#d2001f",
+  "#e2495c",
+  "#ea7f8c",
+  "#f2b6bc",
+  "#5c5652",
+  "#8b8480",
+  "#c2bbb6",
 ];
 
 function compactCurrency(value: number): string {
