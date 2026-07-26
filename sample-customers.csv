@@ -1,0 +1,51 @@
+CustomerID,CustomerName,Industry,CreditScore,RepaymentStatus,LoanBalance
+C001,Acme Manufacturing,Manufacturing,710,Current,1250000
+C002,Harborview Retail,Retail,590,30 Days Late,480000
+C003,Southern Agri Co,Agriculture,640,Current,2100000
+C004,BlueSky Logistics,Transport,520,90+ Days Late,1750000
+C005,Crestline Property Group,Property,680,Current,3400000
+C006,Nexus Health Partners,Healthcare,750,Current,890000
+C007,Ironbridge Construction,Construction,505,Default,2600000
+C008,Coastal Hospitality,Hospitality,600,60 Days Late,1120000
+C009,Vantage Tech Solutions,Technology,720,Current,650000
+C010,Prairie Farms Ltd,Agriculture,560,30 Days Late,1980000
+C011,Metro Retail Group,Retail,470,Default,3100000
+C012,Summit Energy,Energy,695,Current,4200000
+C013,Golden Gate Foods,Food & Beverage,610,Current,760000
+C014,Redwood Transport,Transport,540,60 Days Late,1340000
+C015,Alpine Construction,Construction,780,Current,980000
+C016,Lakeside Manufacturing,Manufacturing,630,30 Days Late,1560000
+C017,Northstar Property,Property,660,Current,2900000
+C018,Pioneer Agriculture,Agriculture,500,90+ Days Late,2250000
+C019,Central Health Group,Healthcare,700,Current,1080000
+C020,Delta Hospitality,Hospitality,455,Default,1900000
+C021,Precision Fabrication Co,Manufacturing,721,Current,695000
+C022,Union Square Retail,Retail,452,Default,3295000
+C023,Sunridge Agriculture,Agriculture,749,Current,2058000
+C024,Continental Freight,Transport,731,Current,3725000
+C025,Meridian Property Trust,Property,643,Current,3777000
+C026,Cascade Medical Group,Healthcare,455,Default,2128000
+C027,Redline Construction,Construction,767,Current,3549000
+C028,Harbor View Hotels,Hospitality,631,Current,1390000
+C029,Nova Software Group,Technology,538,60 Days Late,1264000
+C030,Amberfield Energy,Energy,631,30 Days Late,1780000
+C031,Harvest Table Foods,Food & Beverage,513,Default,1839000
+C032,Anchor Industrial,Manufacturing,760,Current,814000
+C033,Highstreet Traders,Retail,466,Default,4366000
+C034,Greenfield Growers,Agriculture,619,30 Days Late,4012000
+C035,Crosswind Haulage,Transport,591,30 Days Late,1772000
+C036,Skyline Property Partners,Property,767,Current,2759000
+C037,Pinegrove Clinics,Healthcare,617,30 Days Late,2658000
+C038,Bedrock Builders,Construction,751,Current,3725000
+C039,Silver Palm Resorts,Hospitality,579,30 Days Late,4305000
+C040,Vertex Tech Partners,Technology,791,Current,935000
+C041,Ridgeline Energy,Energy,648,30 Days Late,3168000
+C042,Cascadia Brewing Co,Food & Beverage,498,Default,863000
+C043,Ironclad Manufacturing,Manufacturing,741,Current,832000
+C044,Meridian Retail Group,Retail,642,30 Days Late,3950000
+C045,Riverbend Agri,Agriculture,605,60 Days Late,3142000
+C046,Overland Logistics,Transport,515,90+ Days Late,1676000
+C047,Union Realty Group,Property,746,Current,782000
+C048,Willowbrook Health,Healthcare,576,30 Days Late,2328000
+C049,Keystone Contractors,Construction,583,60 Days Late,960000
+C050,Grandview Hospitality Group,Hospitality,521,90+ Days Late,2576000
