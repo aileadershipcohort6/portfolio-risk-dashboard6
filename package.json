@@ -1,0 +1,34 @@
+{
+  "name": "portfolio-risk-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Client-side executive lending portfolio risk dashboard prototype",
+  "license": "MIT",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "15.5.20",
+    "papaparse": "^5.5.4",
+    "pdfjs-dist": "^6.1.200",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "recharts": "^3.9.2"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "3.3.1",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/papaparse": "^5.5.2",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.20",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
