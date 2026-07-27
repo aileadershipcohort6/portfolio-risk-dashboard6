@@ -22,12 +22,19 @@ import { useAnalysis } from "@/context/AnalysisContext";
 import {
   CATEGORY_HEX,
   CATEGORY_LABEL,
+  DRIVER_HEX,
+  DRIVER_LABEL,
   INDUSTRY_PALETTE,
+  contributionByCategory,
   formatCompactCurrency,
   formatCurrency,
   formatPercent,
+  generateDriverTrend,
   generatePortfolioTrend,
+  primaryDriverBreakdown,
   recommendedActions,
+  riskDriverInsights,
+  sectorRiskProfile,
   summariseByCategory,
   summariseByIndustry,
   topRiskCustomers,
@@ -67,6 +74,7 @@ export default function DashboardPage() {
   const data = useMemo(() => {
     if (!result) return null;
     const customers = result.customers;
+    const weights = result.weights;
     return {
       categories: summariseByCategory(customers),
       industries: summariseByIndustry(customers),
@@ -74,6 +82,12 @@ export default function DashboardPage() {
       trend: generatePortfolioTrend(customers),
       actions: recommendedActions(customers),
       total: totalExposure(customers),
+      driverTrend: generateDriverTrend(customers, weights),
+      contributions: contributionByCategory(customers, weights),
+      drivers: primaryDriverBreakdown(customers, weights, ["Amber", "Red"]),
+      sectors: sectorRiskProfile(customers),
+      insights: riskDriverInsights(customers, weights),
+      atRiskCount: customers.filter((c) => c.category !== "Green").length,
     };
   }, [result]);
 
@@ -358,6 +372,237 @@ export default function DashboardPage() {
           </ResponsiveContainer>
         </div>
       </Card>
+
+      {/* 5b. Risk driver trend — what is escalating the portfolio */}
+      <Card
+        title="Risk Driver Trend"
+        subtitle="Average weighted contribution of each driver to the portfolio risk score — the rising line is what is triggering at-risk behaviour"
+      >
+        <div className="h-[280px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={data.driverTrend}
+              margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+              <XAxis
+                dataKey="period"
+                tick={{ fontSize: 11, fill: "var(--muted)" }}
+                axisLine={{ stroke: "var(--border)" }}
+                tickLine={false}
+              />
+              <YAxis
+                tick={{ fontSize: 11, fill: "var(--muted)" }}
+                axisLine={false}
+                tickLine={false}
+                label={{
+                  value: "Points of risk score",
+                  angle: -90,
+                  position: "insideLeft",
+                  style: { fontSize: 11, fill: "var(--muted)" },
+                }}
+              />
+              <Tooltip
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                formatter={(value: any, name: any) => [`${value} pts`, name]}
+                contentStyle={{
+                  borderRadius: 8,
+                  border: "1px solid var(--border)",
+                  fontSize: 12,
+                }}
+              />
+              <Legend
+                wrapperStyle={{ fontSize: 11, color: "var(--muted)" }}
+                iconType="plainline"
+              />
+              {(["credit", "repayment", "exposure"] as const).map((key) => (
+                <Line
+                  key={key}
+                  type="monotone"
+                  dataKey={key}
+                  name={DRIVER_LABEL[key]}
+                  stroke={DRIVER_HEX[key]}
+                  strokeWidth={2}
+                  dot={{ r: 2 }}
+                  activeDot={{ r: 4 }}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+        <p className="mt-3 text-xs leading-relaxed text-[var(--muted)]">
+          Illustrative trend leading up to the current position. Each series is
+          the driver&apos;s weighted contribution, so the three stack to the
+          average portfolio risk score.
+        </p>
+      </Card>
+
+      {/* 5c. What is triggering at-risk behaviour */}
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card
+          title="What's Triggering At-Risk Behaviour"
+          subtitle="Average score composition by risk category"
+        >
+          <div className="h-[220px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={data.contributions}
+                layout="vertical"
+                margin={{ top: 4, right: 12, left: 4, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis
+                  type="number"
+                  domain={[0, 100]}
+                  tick={{ fontSize: 11, fill: "var(--muted)" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="category"
+                  width={52}
+                  tick={{ fontSize: 12, fill: "var(--muted)" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  formatter={(value: any, name: any) => [`${value} pts`, name]}
+                  contentStyle={{
+                    borderRadius: 8,
+                    border: "1px solid var(--border)",
+                    fontSize: 12,
+                  }}
+                />
+                <Legend
+                  wrapperStyle={{ fontSize: 11, color: "var(--muted)" }}
+                />
+                {(["credit", "repayment", "exposure"] as const).map((key) => (
+                  <Bar
+                    key={key}
+                    dataKey={key}
+                    stackId="drivers"
+                    name={DRIVER_LABEL[key]}
+                    fill={DRIVER_HEX[key]}
+                  />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="mt-4 border-t border-[var(--border)] pt-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+              Dominant trigger — Amber &amp; Red customers
+            </h3>
+            <ul className="mt-3 space-y-2">
+              {data.drivers.map((d) => (
+                <li key={d.driver} className="text-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="flex items-center gap-2">
+                      <span
+                        className="h-2 w-2 rounded-full"
+                        style={{ backgroundColor: DRIVER_HEX[d.driver] }}
+                        aria-hidden="true"
+                      />
+                      {DRIVER_LABEL[d.driver]}
+                    </span>
+                    <span className="tabular-nums text-[var(--muted)]">
+                      {d.count} of {data.atRiskCount} ·{" "}
+                      {formatCompactCurrency(d.exposure)}
+                    </span>
+                  </div>
+                  <div className="mt-1 h-1.5 w-full overflow-hidden rounded-full bg-[var(--background)]">
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: `${Math.round(d.share * 100)}%`,
+                        backgroundColor: DRIVER_HEX[d.driver],
+                      }}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Card>
+
+        <Card
+          title="Risk Concentration by Sector"
+          subtitle="Average risk score — where at-risk behaviour is clustering"
+        >
+          <div className="h-[220px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={data.sectors}
+                layout="vertical"
+                margin={{ top: 4, right: 16, left: 4, bottom: 0 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                <XAxis
+                  type="number"
+                  domain={[0, 100]}
+                  tick={{ fontSize: 11, fill: "var(--muted)" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="industry"
+                  width={104}
+                  tick={{ fontSize: 10, fill: "var(--muted)" }}
+                  axisLine={false}
+                  tickLine={false}
+                />
+                <Tooltip
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  formatter={(value: any) => [value, "Average risk score"]}
+                  contentStyle={{
+                    borderRadius: 8,
+                    border: "1px solid var(--border)",
+                    fontSize: 12,
+                  }}
+                />
+                <Bar
+                  dataKey="averageRiskScore"
+                  name="Average risk score"
+                  radius={[0, 4, 4, 0]}
+                >
+                  {data.sectors.map((s) => (
+                    <Cell
+                      key={s.industry}
+                      fill={
+                        s.averageRiskScore > 65
+                          ? CATEGORY_HEX.Red
+                          : s.averageRiskScore > 35
+                            ? CATEGORY_HEX.Amber
+                            : CATEGORY_HEX.Green
+                      }
+                    />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="mt-4 border-t border-[var(--border)] pt-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+              Key findings
+            </h3>
+            <ul className="mt-3 space-y-2.5">
+              {data.insights.map((insight, i) => (
+                <li key={i} className="flex gap-3 text-sm leading-relaxed">
+                  <span
+                    className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--accent)]"
+                    aria-hidden="true"
+                  />
+                  <span>{insight}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </Card>
+      </div>
 
       {/* 6. Top 10 highest-risk customers */}
       <Card title="Top 10 Highest-Risk Customers">
